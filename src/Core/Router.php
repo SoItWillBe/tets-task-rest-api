@@ -15,7 +15,7 @@ class Router implements RouterInterface
         $urlWithReplacedPlaceholder = $this->matchRoute($url, $_SERVER['REQUEST_URI']);
 
         if (null !== $urlWithReplacedPlaceholder) {
-            $url = $urlWithReplacedPlaceholder;
+            $url = $urlWithReplacedPlaceholder['uri'];
         }
 
         if (isset($this->routerContainer[$method][$url])) {
@@ -27,6 +27,10 @@ class Router implements RouterInterface
                 'method' => $handler[1]
             ], ...['auth' => false]
         ];
+
+        $this->routerContainer[$method][$url]['params'] = empty($urlWithReplacedPlaceholder['params'])?
+            [] : $urlWithReplacedPlaceholder['params'];
+
         $this->lastIndex = ['method' => $method, 'url' => $url];
 
         return $this;
@@ -46,15 +50,24 @@ class Router implements RouterInterface
         return $this->routerContainer[$method][$uri] ?? null;
     }
 
-    private function matchRoute(string $pattern, string $uri): ?string
+    private function matchRoute(string $pattern, string $uri): ?array
     {
+        $result = [];
+
         $regex = preg_replace('#:([\w]+)#', '(?P<$1>[^/]+)', $pattern);
         $regex = "#^" . $regex . "$#";
 
         if (preg_match($regex, $uri, $matches)) {
-            return str_replace($pattern, $uri, $pattern);
+            $result['params'] =  array_filter(
+                $matches, fn($key) => !is_int($key), ARRAY_FILTER_USE_KEY
+            );
         }
 
-        return null;
+        if (!preg_match($regex, $uri, $matches)) {
+            return null;
+        }
+        $result['uri'] = str_replace($pattern, $uri, $pattern);
+
+        return $result;
     }
 }
