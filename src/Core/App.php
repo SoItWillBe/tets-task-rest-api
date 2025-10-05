@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Core\Http\Request;
 use App\Interfaces\RouterInterface;
 
 class App
@@ -29,14 +30,21 @@ class App
      */
     public function listen(Request $request): void
     {
-        $handler = $this->config['router']
-            ->getRoute($request->method, $request->uri);
+        $handler = $this->config['router']->getRoute($request->method, $request->uri);
 
+        // REFACTOR
+        if (null === $handler) {
+            http_response_code(404);
+            exit();
+        }
+        // REFACTOR
+
+        $controllerClass = new $handler[0]['controller'](
+            $this->config['db']
+        );
         $method = $handler[0]['method'];
 
-        $controllerClass = new $handler[0]['controller']();
-
-        $controllerClass->$method();
+        call_user_func_array([$controllerClass, $method], $handler['params']);
     }
 
 }
