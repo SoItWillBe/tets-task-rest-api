@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 include __DIR__ . '/../vendor/autoload.php';
 
 use App\Core\App;
-use App\Core\Request;
+use App\Core\Http\Request;
 
 try {
     $config = include __DIR__ . '/../config/config.php';
