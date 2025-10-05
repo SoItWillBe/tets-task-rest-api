@@ -2,37 +2,55 @@
 
 namespace App\Core;
 
-use MongoDB\Driver\Query;
-use PDO;
+use App\Interfaces\QueryManagerInterface;
 
-class QueryManager
+abstract class QueryManager implements QueryManagerInterface
 {
-
-    private \PDO $pdo;
-
     private string $query;
 
-    public function __construct(\PDO $pdo)
-    {
-        $this->pdo = $pdo;
-    }
+    private array $binds;
 
-    public function select(array $range = null): QueryManager
+    public function select(array $rows = null): self
     {
-        $condition = (null === $range) ? '*' : $range;
+        $rows = (null === $rows) ? '*' : $rows;
+
+        if (is_array($rows)) {
+            $rows = implode(', ', $rows);
+        }
+
+        $this->query = sprintf(
+            "SELECT %s FROM %s",
+            $rows, $this->table
+        );
 
         return $this;
     }
 
-//    public function insert()
-//    {
-//        //
-//    }
+    public function where(array $where): self
+    {
+        $condition = 'WHERE ';
+        foreach ($where as $key => $value) {
+            $condition .= "$key = :$key ";
+        }
+        $this->query .= " {$condition}";
+        $this->binds = $where;
 
+        return $this;
+    }
 
     public function execute()
     {
-//        return $this->pdo->exec($this->query);
+        $stmt = $this->pdo->prepare($this->query);
+        if (!empty($this->binds)) {
+            $stmt->execute($this->binds);
+        }
+
+        return $stmt->fetchAll();
+    }
+
+    public function insert()
+    {
+        //
     }
 
 }
