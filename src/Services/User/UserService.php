@@ -2,29 +2,28 @@
 
 namespace App\Services\User;
 
-use App\Core\QueryManager;
+use App\Interfaces\QueryManagerInterface;
 
 class UserService
 {
 
     private $queryManager;
 
-    public function __construct(QueryManager $queryManager)
+    public function __construct(QueryManagerInterface $queryManager)
     {
         $this->queryManager = $queryManager;
     }
 
     public function getAllUsers(): array
     {
-        return $this->queryManager
-            ->select()
-            ->execute();
+        return $this->queryManager->all();
     }
 
     public function getUserById($id): array
     {
         return $this->queryManager
-            ->select(['id' => $id])
+            ->select(['id', 'email'])
+            ->where(['id' => $id])
             ->execute();
     }
 
