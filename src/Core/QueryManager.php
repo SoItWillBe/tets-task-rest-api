@@ -41,9 +41,7 @@ abstract class QueryManager implements QueryManagerInterface
     public function execute()
     {
         $stmt = $this->pdo->prepare($this->query);
-        if (!empty($this->binds)) {
-            $stmt->execute($this->binds);
-        }
+        $stmt->execute($this->binds ?? []);
 
         return $stmt->fetchAll();
     }
