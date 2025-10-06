@@ -18,5 +18,5 @@ try {
         ->initRouter($router)
         ->listen($request);
 } catch (\Exception $e) {
-    echo "<pre>Exception message:\n\t{$e->getMessage()}";
+    echo "<pre>Exception message:\n\t{$e->getMessage()}</pre>";
 }
