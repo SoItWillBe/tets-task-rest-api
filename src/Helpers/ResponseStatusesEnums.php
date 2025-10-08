@@ -2,7 +2,7 @@
 
 namespace App\Helpers;
 
-enum ResponseEnums: string
+enum ResponseStatusesEnums: string
 {
     case Success = 'success';
     case Error = 'error';
