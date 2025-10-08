@@ -27,12 +27,9 @@ class Router implements RouterInterface
             $this->uri,
         );
 
-        // return 404 if url is not registered
-        if (null === $urlWithReplacedPlaceholder) {
-            ResponseCode::error(404);
+        if (null !== $urlWithReplacedPlaceholder) {
+            $url = $urlWithReplacedPlaceholder['url'];
         }
-
-        $url = $urlWithReplacedPlaceholder['url'];
 
         // check on duplicates in router
         if (isset($this->routerContainer[$method->value][$url])) {
@@ -67,7 +64,10 @@ class Router implements RouterInterface
 
     public function getRoute($method): ?array
     {
-        return $this->routerContainer[$method][$this->uri] ?? null;
+        if (!isset($this->routerContainer[$method]) || !isset($this->routerContainer[$method][$this->uri])) {
+            return null;
+        }
+        return $this->routerContainer[$method][$this->uri];
     }
 
     private function matchRoute(string $pattern, string $uri): ?array
