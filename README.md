@@ -56,16 +56,47 @@ Short doc for usage:
 
 Endpoints marked with `auth()` require a Bearer token in the Authorization header.
 
-| Method | Endpoint         | Controller & Action         | Auth Required |
-|--------|------------------|----------------------------|--------------|
-| GET    | `/`              | Welcome::index             | No           |
-| GET    | `/users`         | UserController::index      | Yes          |
-| GET    | `/users/:id`     | UserController::show       | Yes          |
-| PUT    | `/users/:id`     | UserController::update     | Yes          |
-| DELETE | `/users/:id`     | UserController::delete     | Yes          |
-| POST   | `/login`         | AuthController::login      | No           |
-| POST   | `/logout`        | AuthController::login      | Yes          |
-| POST   | `/register`      | AuthController::register   | No           |
+| Method | Endpoint     | Controller & Action         | Auth Required |
+|--------|--------------|----------------------------|--------------|
+| GET    | `/`          | Welcome::index             | No           |
+| GET    | `/users`     | UserController::index      | Yes          |
+| GET    | `/users/:id` | UserController::show       | Yes          |
+| PUT    | `/users/:id` | UserController::update     | Yes          |
+| DELETE | `/users/:id` | UserController::delete     | Yes          |
+| POST   | `/login`     | AuthController::login      | No           |
+| POST   | `/logout`    | AuthController::login      | Yes          |
+| POST   | `/register`  | AuthController::register   | No           |
+
+Confirm login with `Authorization: Bearer <token>` header.
+
+Examples of usage:
+
+`POST /login`
+Login body data as form-data or x-www-form-urlencoded:
+`email` and `password`
+Returns token in header.
+
+`POST /register`
+Login body data as form-data or x-www-form-urlencoded:
+`email` and `password`.
+Automatically log in , returns token in header on success.
+
+`PUT /users/:id`
+You can only update your current user.
+Expects json body:
+`
+{
+    "email": "updated@mail.com",
+    "password": "1234"
+}
+`
+
+`GET /users`
+Returns all users. Only for authorized users.
+You can add filer for any attribute. Example:
+`GET /users?age=22&city=lviv`
+
+
 
 You can use token `d39e201ba4621bcf43589023fe79502e31373539383533313234` if you ran all sql files earlier.
 
