@@ -16,7 +16,7 @@ $router->registerRoute(Method::put, '/users/:id', [UserController::class, 'updat
 $router->registerRoute(Method::delete, '/users/:id', [UserController::class, 'delete'])->auth();
 
 $router->registerRoute(Method::post, '/login', [AuthController::class, 'login']);
-$router->registerRoute(Method::post, '/logout', [AuthController::class, 'login'])->auth();
+$router->registerRoute(Method::post, '/logout', [AuthController::class, 'logout'])->auth();
 $router->registerRoute(Method::post, '/register', [AuthController::class, 'register']);
 
 return $router;

@@ -2,6 +2,7 @@
 
 namespace App\Services\Auth;
 
+use App\Core\Container\UserContainer;
 use App\Core\Http\Request;
 use App\Helpers\Auth\HashHelper;
 use App\Helpers\Auth\Validate;
@@ -80,6 +81,11 @@ class AuthService {
         return ($register) ?
             ResponseMessage::response(self::SUCCESS, 'user created successfully.') :
             ResponseMessage::response(self::ERROR, 'error while registering user', 500);
+    }
+
+    public function logout()
+    {
+        $this->queryManager->killSession(UserContainer::getUserId());
     }
 
     private function generateToken(): string

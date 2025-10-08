@@ -66,4 +66,12 @@ class AuthController extends Controller
         $this->login();
     }
 
+    public function logout()
+    {
+        $this->service->logout();
+
+        $this->jsonResponse(
+            ResponseMessage::response(ResponseStatusesEnums::Success, 'user logged out'),
+        );
+    }
 }
