@@ -7,7 +7,7 @@ REST API for user management. The project is implemented in PHP using a layered 
 
 ### 1. Clone the repository
 ```bash
-git clone <repo-url>
+git clone https://github.com/SoItWillBe/tets-task-rest-api.git
 cd tets-task-rest-api
 ```
 
