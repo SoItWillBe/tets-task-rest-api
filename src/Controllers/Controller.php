@@ -28,6 +28,5 @@ abstract class Controller implements ControllerInterface
         }
         http_response_code($statusCode);
         echo $message;
-        exit();
     }
 }
