@@ -82,10 +82,11 @@ abstract class QueryManager implements QueryManagerInterface
 
     protected function update(array $payload, array $where): bool
     {
-        $setStatement = $this->setWhereStatement($where);
+        $setStatement = $this->setWhereStatement($payload);
         $this->query = "UPDATE {$this->table} SET $setStatement";
+        $this->where($where);
 
-        return $this->pdo->prepare($this->query)->execute($payload);
+        return $this->pdo->prepare($this->query)->execute(array_merge($payload, $where));
     }
 
     protected function delete(array $where): bool
