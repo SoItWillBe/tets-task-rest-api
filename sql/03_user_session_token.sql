@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS task;
+DROP TABLE IF EXISTS users_token;
 
-CREATE TABLE IF NOT EXISTS task
+CREATE TABLE IF NOT EXISTS users_token
 (
     id         SERIAL PRIMARY KEY,
     user_id    BIGINT UNSIGNED,
@@ -10,3 +10,7 @@ CREATE TABLE IF NOT EXISTS task
         ON UPDATE CASCADE
         ON DELETE CASCADE
 );
+
+CREATE INDEX token_index
+    ON users_token (token);
+
