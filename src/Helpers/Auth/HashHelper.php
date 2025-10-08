@@ -2,7 +2,10 @@
 
 namespace App\Helpers\Auth;
 
-class Hash
+/**
+ * Helper for password hashing and validating
+ */
+class HashHelper
 {
     public static function hashPassword($password): string
     {
