@@ -13,15 +13,19 @@ cd tets-task-rest-api
 
 ### 2. Start the database
 Run SQL scripts from the `sql/` to store data in database.
+Prepare connection and run 
+`mysql -u your_username -p your_database_name < EACH_FILE`
+
+Not very convenient, but easy...
 
 ### 3. Configure the connection
 Copy `config/config.php.txt` without as `.php` file `config/config.php`.
 
 Set database connection parameters in `config/config.php`:
 - host: `127.0.0.1` (if the application runs on the host)
-- user: `user`
-- pass: `0000`
-- db_name: `test_project`
+- user: `your_username`
+- pass: `your_password`
+- db_name: `your_database_name`
 
 ### 4. Install dependencies
 ```bash
