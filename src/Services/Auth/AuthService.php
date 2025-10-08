@@ -21,7 +21,7 @@ class AuthService {
         $this->queryManager = $queryManager;
     }
 
-    public function login(Request $request)
+    public function login(Request $request): ?array
     {
         // returns error if users data not valid
         if (false === Validate::auth($request->post))
@@ -40,7 +40,7 @@ class AuthService {
         }
 
         // returns error if passwords doesnt match
-        if (empty($user) || false === HashHelper::validate($request->post['password'], $user[0]['password']))
+        if (empty($user) || false === password_verify($request->post['password'], $user[0]['password']))
         {
             return ResponseMessage::response(self::ERROR, 'Wrong credentials', 400);
         }
@@ -49,7 +49,9 @@ class AuthService {
         $token = $this->generateToken();
 
         // registering session token
-        return $this->queryManager->storeSessionToken($user[0]['id'], $token);
+        $this->queryManager->storeSessionToken($user[0]['id'], $token);
+
+        return ['token' => $token, 'status' => self::SUCCESS, 'message' => $user[0]['id']];
     }
 
     public function register(Request $request): ?array
@@ -65,7 +67,7 @@ class AuthService {
 
         // returns error if user not exists
         if (!empty($user)) {
-            return ResponseMessage::response(self::SUCCESS, 'User already exists. Forwarding to login.');
+            return ResponseMessage::response(self::SUCCESS, 'User already exists.');
         }
 
         // hashing password
@@ -76,7 +78,7 @@ class AuthService {
 
         // returns new user id or error
         return ($register) ?
-            ResponseMessage::response(self::SUCCESS, ['id' => $register[0]['id']]) :
+            ResponseMessage::response(self::SUCCESS, 'user created successfully.') :
             ResponseMessage::response(self::ERROR, 'error while registering user', 500);
     }
 
