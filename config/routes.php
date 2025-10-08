@@ -12,7 +12,6 @@ $router->registerRoute(Method::get, '/', [Welcome::class, 'index']);
 
 $router->registerRoute(Method::get, '/users', [UserController::class, 'index'])->auth();
 $router->registerRoute(Method::get, '/users/:id', [UserController::class, 'show'])->auth();
-$router->registerRoute(Method::post, '/users', [UserController::class, 'store'])->auth();
 $router->registerRoute(Method::put, '/users/:id', [UserController::class, 'update'])->auth();
 $router->registerRoute(Method::delete, '/users/:id', [UserController::class, 'delete'])->auth();
 
