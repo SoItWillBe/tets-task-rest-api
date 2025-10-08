@@ -20,13 +20,13 @@ final class Middleware
 
         $token = str_replace('Bearer ', '', $headers['Authorization']);
 
-        $stmt = $pdo->prepare("SELECT id FROM users_token WHERE token = :token");
+        $stmt = $pdo->prepare("SELECT user_id FROM users_token WHERE token = :token");
         $stmt->execute(['token' => $token]);
         $user = $stmt->fetch();
 
         if (false !== $user)
         {
-            return $user['id'];
+            return $user['user_id'];
         }
 
         return -1;
