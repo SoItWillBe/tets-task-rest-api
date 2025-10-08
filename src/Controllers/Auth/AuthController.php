@@ -46,8 +46,7 @@ class AuthController extends Controller
 
         // handle other errors related to log in process
         $this->jsonResponse(
-            ResponseMessage::response($login['status'], $login['message']),
-            400
+            ResponseMessage::response($login['status'], $login['message'], 400),
         );
     }
 
@@ -59,12 +58,11 @@ class AuthController extends Controller
         // return error if registration is not successfully with reason in message
         if (null === $registrationData) {
             $this->jsonResponse(
-                ResponseMessage::response($registrationData['status'], $registrationData['message']),
-                400
+                ResponseMessage::response($registrationData['status'], $registrationData['message'], 400),
             );
         }
 
-        // try to log in user if registration is successfull
+        // try to log in user if registration is successful
         $this->login();
     }
 
