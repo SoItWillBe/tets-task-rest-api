@@ -1,0 +1,68 @@
+# Tets Task REST API
+
+## Description
+REST API for user management. The project is implemented in PHP using a layered architecture (Controllers, Services, Core, Helpers, Interfaces). Data is stored in MariaDB.
+
+## Quick Start
+
+### 1. Clone the repository
+```bash
+git clone <repo-url>
+cd tets-task-rest-api
+```
+
+### 2. Start the database
+Run SQL scripts from the `sql/` to store data in database.
+
+### 3. Configure the connection
+Copy `config/config.php.txt` without as `.php` file `config/config.php`.
+
+Set database connection parameters in `config/config.php`:
+- host: `127.0.0.1` (if the application runs on the host)
+- user: `user`
+- pass: `0000`
+- db_name: `test_project`
+
+### 4. Install dependencies
+```bash
+composer install
+```
+
+### 5. Run the application
+Entry point: `public/index.php`.
+
+Run `php -S 127.0.0.1:8080 public/index.php` in CLI to start app.
+
+## Project Structure
+- `src/Controllers` — controllers
+- `src/Services` — business logic
+- `src/Core` — application core
+- `src/Helpers` — helper classes
+- `src/Interfaces` — interfaces
+- `sql/` — SQL scripts for database initialization
+- `public/` — public directory (entry point)
+
+## API Endpoints
+"API Endpoints"
+Endpoints stored in `config/routes.php`.
+
+Short doc for usage:
+
+(API Endpoints)
+
+Endpoints marked with `auth()` require a Bearer token in the Authorization header.
+
+| Method | Endpoint         | Controller & Action         | Auth Required |
+|--------|------------------|----------------------------|--------------|
+| GET    | `/`              | Welcome::index             | No           |
+| GET    | `/users`         | UserController::index      | Yes          |
+| GET    | `/users/:id`     | UserController::show       | Yes          |
+| PUT    | `/users/:id`     | UserController::update     | Yes          |
+| DELETE | `/users/:id`     | UserController::delete     | Yes          |
+| POST   | `/login`         | AuthController::login      | No           |
+| POST   | `/logout`        | AuthController::login      | Yes          |
+| POST   | `/register`      | AuthController::register   | No           |
+
+You can use token `d39e201ba4621bcf43589023fe79502e31373539383533313234` if you ran all sql files earlier.
+
+Otherwise you can login with any email and password `1234` or register your own user.
