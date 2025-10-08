@@ -2,9 +2,9 @@
 
 namespace App\Core;
 
-final class ResponseError
+final class ResponseCode
 {
-    public static function abort(int $code): void
+    public static function error(int $code): void
     {
         http_response_code($code);
         exit();
