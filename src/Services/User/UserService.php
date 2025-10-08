@@ -60,7 +60,7 @@ class UserService
         }
 
         // denies update from not owner
-        if (UserContainer::getUserId() !== $id) {
+        if (UserContainer::getUserId() != (int)$id) {
             return ResponseMessage::response(self::ERROR, 'you are not allowed to edit this user', 401);
         }
 
