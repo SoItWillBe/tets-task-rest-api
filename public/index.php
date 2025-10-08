@@ -14,9 +14,11 @@ try {
     $router = include __DIR__ . '/../config/routes.php';
     $app = new App();
     $request = new Request();
-    $app->initDB($config)
-        ->initRouter($router)
-        ->listen($request);
+
+    $app->initDB($config) // configure db
+        ->initRouter($router) // configure router
+        ->prepare($request) // handle uri and check auth if needed
+        ->runController($request);
 } catch (\Exception $e) {
     echo "<pre>Exception message:\n\t{$e->getMessage()}</pre>";
 }
