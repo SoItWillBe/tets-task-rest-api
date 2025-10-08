@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core;
+namespace App\Core\QueryManagers;
 
 use App\Interfaces\QueryManagerInterface;
 
@@ -43,6 +43,25 @@ abstract class QueryManager implements QueryManagerInterface
         return $this;
     }
 
+    protected function like(array $like): self
+    {
+        $condition = 'WHERE ';
+
+        $condition .= implode(' AND ', array_map(function ($key) use ($like) {
+                return "$key LIKE :$key ";
+            }, array_keys($like))
+        );
+
+        $this->query .= " {$condition}";
+        $this->binds = array_map(
+            function ($value) {
+                return "%$value%";
+            }, $like
+        );
+
+        return $this;
+    }
+
     protected function execute()
     {
         $stmt = $this->pdo->prepare($this->query);
@@ -61,28 +80,20 @@ abstract class QueryManager implements QueryManagerInterface
         return $this->pdo->prepare($this->query)->execute($payload);
     }
 
-    protected function update(array $payload, array $where = null): bool
+    protected function update(array $payload, array $where): bool
     {
-        $setStatement = implode(', ', array_map(function ($key, $value) use ($payload) {
-                return "$key = '$value' ";
-            }, array_keys($payload), array_values($payload))
-        );
+        $setStatement = $this->setWhereStatement($where);
+        $this->query = "UPDATE {$this->table} SET $setStatement";
 
-        $this->query = "UPDATE users SET $setStatement";
-        if (null === $where) {
-            throw new \Exception('Where cannot be null!');
-        }
-        $this->where($where);
-
-        return $this->pdo->prepare($this->query)->execute($where);
+        return $this->pdo->prepare($this->query)->execute($payload);
     }
 
-    protected function delete($id): bool
+    protected function delete(array $where): bool
     {
-        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
-        $stmt->bindParam(':id', $id);
+        $setStatement = $this->setWhereStatement($where);
+        $this->query = "DELETE FROM {$this->table} WHERE {$setStatement}";
 
-        return $stmt->execute();
+        return $this->pdo->prepare($this->query)->execute($where);
     }
 
     private function preparePlaceholders(array $payload): array
@@ -93,5 +104,13 @@ abstract class QueryManager implements QueryManagerInterface
         $value = ":" . implode(', :', $keys);
 
         return ["key" => $key, "value" => $value];
+    }
+
+    private function setWhereStatement(array $payload): string
+    {
+        return implode(', ', array_map(function ($key) use ($payload) {
+                return "$key = :$key ";
+            }, array_keys($payload))
+        );
     }
 }
