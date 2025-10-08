@@ -2,12 +2,16 @@
 
 namespace App\Core;
 
+use App\Core\Container\UserContainer;
+use App\Core\Http\Middleware;
 use App\Core\Http\Request;
 use App\Interfaces\RouterInterface;
 
 class App
 {
     protected array $config;
+
+    private array $handler;
 
     public function initDB(array $config): App
     {
@@ -25,26 +29,38 @@ class App
         return $this;
     }
 
-    /**
-     * TODO: REFACTOR
-     */
-    public function listen(Request $request): void
+    public function prepare(Request $request): App
     {
-        $handler = $this->config['router']->getRoute($request->method, $request->uri);
-
-        // REFACTOR
-        if (null === $handler) {
-            http_response_code(404);
-            exit();
+        // Define handler for uri
+        $this->handler = $this->config['router']->getRoute($request->method, $request->uri);
+        if (null === $this->handler)
+        {
+            ResponseCode::error(404);
         }
-        // REFACTOR
 
-        $controllerClass = new $handler[0]['controller'](
-            $this->config['db']
+        // Fetching user
+        $user = Middleware::checkAuth($this->handler['auth'], $request->headers, $this->config['db']);
+        if (-1 === $user) {
+            ResponseCode::error(401);
+        }
+
+        // Adding user's id to container if user exists
+        if (null != $user) {
+            UserContainer::setUserId($user);
+        }
+
+        return $this;
+    }
+
+    public function runController(Request $request): void
+    {
+        $controllerClass = new $this->handler['controller'](
+            $this->config['db'],
+            $request
         );
-        $method = $handler[0]['method'];
+        $method = $this->handler['method'];
 
-        call_user_func_array([$controllerClass, $method], $handler['params']);
+        call_user_func_array([$controllerClass, $method], $this->handler['params']);
     }
 
 }
