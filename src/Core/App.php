@@ -11,7 +11,7 @@ class App
 {
     protected array $config;
 
-    private array $handler;
+    private ?array $handler;
 
     public function initDB(array $config): App
     {
