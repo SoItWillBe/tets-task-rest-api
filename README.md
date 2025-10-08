@@ -28,8 +28,9 @@ Set database connection parameters in `config/config.php`:
 - db_name: `your_database_name`
 
 ### 4. Install dependencies
-```bash
+```
 composer install
+composer dumpautoload
 ```
 
 ### 5. Run the application
