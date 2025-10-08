@@ -21,26 +21,36 @@ class Router implements RouterInterface
 
     public function registerRoute(Method $method, string $url, array $handler): Router
     {
+
         $urlWithReplacedPlaceholder = $this->matchRoute(
             $url,
             $this->uri,
         );
 
-        if (null !== $urlWithReplacedPlaceholder) {
-            $url = $urlWithReplacedPlaceholder['uri'];
+        // return 404 if url is not registered
+        if (null === $urlWithReplacedPlaceholder) {
+            ResponseCode::error(404);
         }
+
+        $url = $urlWithReplacedPlaceholder['url'];
+
+        // check on duplicates in router
         if (isset($this->routerContainer[$method->value][$url])) {
             throw new \Exception(sprintf('Route [%s] %s already registered!', $method->value, $url));
         }
+
+        // configuring controller, method and setting auth default value.
         $this->routerContainer[$method->value][$url] = [
             'controller' => $handler[0],
             'method' => $handler[1],
             'auth' => false
         ];
 
+        // fetching params for
         $this->routerContainer[$method->value][$url]['params'] = empty($urlWithReplacedPlaceholder['params'])?
             [] : $urlWithReplacedPlaceholder['params'];
 
+        // registering last route. Later this route will get auth=true on demand
         $this->lastIndex = ['method' => $method, 'url' => $url];
 
         return $this;
@@ -76,7 +86,7 @@ class Router implements RouterInterface
         if (!preg_match($regex, $uri, $matches)) {
             return null;
         }
-        $result['uri'] = str_replace($pattern, $uri, $pattern);
+        $result['url'] = str_replace($pattern, $uri, $pattern);
 
         return $result;
     }
