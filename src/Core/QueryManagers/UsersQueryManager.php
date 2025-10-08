@@ -44,6 +44,6 @@ class UsersQueryManager extends QueryManager
 
     public function remove(int $id): bool
     {
-        return $this->delete(['user_id' => $id]);
+        return $this->delete(['id' => $id]);
     }
 }
