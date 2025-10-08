@@ -2,10 +2,7 @@
 
 namespace App\Core\QueryManagers;
 
-use App\Helpers\ResponseMessage;
-use App\Helpers\ResponseStatusesEnums;
-
-class UserSessionQueryManager extends QueryManager
+class AuthQueryManager extends QueryManager
 {
     protected \PDO $pdo;
 
@@ -31,17 +28,10 @@ class UserSessionQueryManager extends QueryManager
     public function storeSessionToken(int $user_id, string $token): bool
     {
         $activeSession = $this->select()->where(['user_id' => $user_id])->execute();
-
         if (!empty($activeSession))
         {
             $this->killSession($user_id);
         }
-        
-        /**
-         * TODO:
-         * - fetch to check existing session for current user.
-         * - if exists - kill and save new.
-         */
 
         return $this->insert(['user_id' => $user_id, 'token' => $token]);
     }
@@ -54,11 +44,14 @@ class UserSessionQueryManager extends QueryManager
             ->execute();
     }
 
-    public function killSession($user_id)
+    public function killSession(int $user_id): void
     {
-        return $this->delete(['user_id' => $user_id]) ?
-            ResponseMessage::response(ResponseStatusesEnums::Success, 'Session token killed'):
-            ResponseMessage::response(ResponseStatusesEnums::Error, 'Error killing session token');
+        $this->delete(['user_id' => $user_id]);
+    }
+
+    public function registerUser($payload): bool
+    {
+        return $this->insert($payload, 'users');
     }
     
 }
