@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Helpers\Http\Method;
 use App\Interfaces\RouterInterface;
 
 class Router implements RouterInterface
@@ -10,25 +11,34 @@ class Router implements RouterInterface
 
     private $lastIndex = null;
 
-    public function registerRoute(string $method, string $url, array $handler): Router
+    private string $uri;
+
+
+    public function __construct()
     {
-        $urlWithReplacedPlaceholder = $this->matchRoute($url, $_SERVER['REQUEST_URI']);
+        $this->uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+    }
+
+    public function registerRoute(Method $method, string $url, array $handler): Router
+    {
+        $urlWithReplacedPlaceholder = $this->matchRoute(
+            $url,
+            $this->uri,
+        );
 
         if (null !== $urlWithReplacedPlaceholder) {
             $url = $urlWithReplacedPlaceholder['uri'];
         }
-
-        if (isset($this->routerContainer[$method][$url])) {
-            throw new \Exception(sprintf('Route [%s] %s already registered!', $method, $url));
+        if (isset($this->routerContainer[$method->value][$url])) {
+            throw new \Exception(sprintf('Route [%s] %s already registered!', $method->value, $url));
         }
-        $this->routerContainer[$method][$url] = [
-            [
-                'controller' => $handler[0],
-                'method' => $handler[1]
-            ], ...['auth' => false]
+        $this->routerContainer[$method->value][$url] = [
+            'controller' => $handler[0],
+            'method' => $handler[1],
+            'auth' => false
         ];
 
-        $this->routerContainer[$method][$url]['params'] = empty($urlWithReplacedPlaceholder['params'])?
+        $this->routerContainer[$method->value][$url]['params'] = empty($urlWithReplacedPlaceholder['params'])?
             [] : $urlWithReplacedPlaceholder['params'];
 
         $this->lastIndex = ['method' => $method, 'url' => $url];
@@ -38,16 +48,16 @@ class Router implements RouterInterface
 
     public function auth(): Router
     {
-        $method = $this->lastIndex['method'];
+        $method = $this->lastIndex['method']->value;
         $url = $this->lastIndex['url'];
         $this->routerContainer[$method][$url]['auth'] = true;
 
         return $this;
     }
 
-    public function getRoute($method, $uri): ?array
+    public function getRoute($method): ?array
     {
-        return $this->routerContainer[$method][$uri] ?? null;
+        return $this->routerContainer[$method][$this->uri] ?? null;
     }
 
     private function matchRoute(string $pattern, string $uri): ?array
